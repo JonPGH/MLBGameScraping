@@ -380,7 +380,6 @@ file_path = os.path.join(base_dir, 'Files')
 #league_lev_df = pd.read_csv('{}/LeagueLevels.csv')
 
 league_lev_df = pd.read_csv('{}/LeagueLevels.csv'.format(file_path))
-st.dataframe(league_lev_df)
 #league_lev_df = pd.read_csv('/Users/jonanderson/Desktop/Python/MLBGameScraping/Files/LeagueLevels.csv')
 levdict = dict(zip(league_lev_df.league_name,league_lev_df.level))
 
@@ -409,7 +408,6 @@ today_str = now_date.strftime("%Y-%m-%d")
 
 header_placeholder = st.empty()
 
-
 ######################
 # two placeholders?
 #st.set_page_config(layout="wide")
@@ -431,7 +429,7 @@ st.write('Last update at {}'.format(now_eastern))
 st.write('\n\n')
 x = 0
 while x != 1:
-    header_placeholder.title('Jons MLB Scrape (last update: {}'.format(x))
+    header_placeholder.title('Jons MLB Scrape (last update: {}'.format(now_eastern))
 
     x = x+1
     #st.write(x)
