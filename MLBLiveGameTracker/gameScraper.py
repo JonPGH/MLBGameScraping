@@ -427,6 +427,8 @@ st.write('Pitcher Data:')
 df1_placeholder = st.empty()
 st.write('Homers:')
 df2_placeholder = st.empty()
+st.write('Top EVs:')
+df3_placeholder = st.empty()
 
 #################
 
@@ -525,7 +527,9 @@ while True:
         ## Hitter stuff
         hrs = livedb[livedb['IsHomer']==1][['BatterName','BatterTeam_aff','player_name','launch_speed','play_desc']].sort_values(by='launch_speed',ascending=False)
         hrs.columns=['Hitter','Team','Pitcher','EV','Description']
-        #hrs = pd.DataFrame({})
+        
+        evs = livedb[['BatterName','BatterTeam_aff','player_name','launch_speed','play_desc']].sort_values(by='launch_speed',ascending=False)
+        evs.columns=['Hitter','Team','Pitcher','EV','Description']
     
     #df = pd.DataFrame({'Pitcher': ['Pitcher1','Pitcher2','Pitcher3'], 'Team': ['STL','PIT','CHC'],
     #                       'PC': [10,15,20], 'SO': [1,2,3],
@@ -540,6 +544,10 @@ while True:
        pass
     try:
        df2_placeholder.dataframe(hrs,width=500, height=200, hide_index=True)
+    except:
+       pass
+    try:
+       df3_placeholder.dataframe(evs,width=500, height=200, hide_index=True)
     except:
        pass
     
