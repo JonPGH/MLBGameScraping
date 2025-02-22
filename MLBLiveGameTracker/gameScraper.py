@@ -420,10 +420,14 @@ today_games_df['game_time'] = pd.to_datetime(today_games_df['game_start_time_et'
 
 show_sched = today_games_df[['date','game_time','away_team','home_team','game_status']]
 show_sched.columns=['Date','Time','Away','Home','Status']
-st.dataframe(show_sched,hide_index=True)
+st.dataframe(show_sched,hide_index=True, width=800, height=200)
 
 # Create placeholders for the DataFrames
+st.write('Pitcher Data:')
 df1_placeholder = st.empty()
+st.write('Homers:')
+df2_placeholder = st.empty()
+
 #################
 
 while True:
@@ -443,6 +447,7 @@ while True:
           game_status = game.get('game_status')
           gamestatuslist.append(game_status)
 
+
       if ('I' not in gamestatuslist) and ('S' not in gamestatuslist) and ('P' not in gamestatuslist):
          st.write('All games today are complete.')
          st.stop()
@@ -458,13 +463,11 @@ while True:
 
     #######################
     livedb = pd.DataFrame()
-    st.write('FOUND LIVE GAME!')
+    #st.write('FOUND LIVE GAME!')
     for game in today_games:
         game_status = game.get('game_status')
         if game_status != 'I':
            continue
-        elif game_status == 'I':
-           st.write('Found live game')
         
         gamedb = get_MILB_PBP_Live(game)
 
@@ -521,9 +524,29 @@ while True:
 
         ## Hitter stuff
         hrs = livedb[livedb['IsHomer']==1][['BatterName','BatterTeam_aff','player_name','launch_speed','play_desc']].sort_values(by='launch_speed',ascending=False)
+        hrs.columns=['Hitter','Team','Pitcher','EV','Description']
+        #hrs = pd.DataFrame({})
+    
+    #df = pd.DataFrame({'Pitcher': ['Pitcher1','Pitcher2','Pitcher3'], 'Team': ['STL','PIT','CHC'],
+    #                       'PC': [10,15,20], 'SO': [1,2,3],
+    #                       'BB': [1,2,3], 'Whiffs': [1,2,3], 'SwStr%': [.1,.11,.12], 'Current Pitcher?': ['Y','N','N']})
+    #hrs = pd.DataFrame({'BatterName': 'Luis Robert', 'BatterTeam_aff': 'CWS', 'player_name': 'Mitch Keller', 'launch_speed': 105, 'play_desc': 'desecription'}, index=[0])
+    #st.dataframe(df,hide_index=True, width=800, height=200)
+    
     
     try:
-      df1_placeholder.dataframe(df, hide_index=True)
-      time.sleep(30)
+       df1_placeholder.dataframe(df,width=800, height=200, hide_index=True)
     except:
-       st.write('No game data to display')   
+       pass
+    try:
+       df2_placeholder.dataframe(hrs,width=500, height=200, hide_index=True)
+    except:
+       pass
+    
+    time.sleep(30)
+    
+    #try:
+      #df1_placeholder.dataframe(df, hide_index=True)
+      #time.sleep(30)
+    #except:
+       #st.write('No game data to display')   
