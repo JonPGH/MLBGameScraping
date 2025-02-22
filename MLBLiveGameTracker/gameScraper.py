@@ -420,15 +420,32 @@ today_games_df['game_time'] = pd.to_datetime(today_games_df['game_start_time_et'
 
 show_sched = today_games_df[['date','game_time','away_team','home_team','game_status']]
 show_sched.columns=['Date','Time','Away','Home','Status']
+show_sched = show_sched[show_sched['Status']=='I']
 st.dataframe(show_sched,hide_index=True, width=800, height=200)
 
 # Create placeholders for the DataFrames
 st.write('Pitcher Data:')
 df1_placeholder = st.empty()
-st.write('Homers:')
-df2_placeholder = st.empty()
-st.write('Top EVs:')
-df3_placeholder = st.empty()
+
+#### MESSING AROUND WITH COLUMNS ####
+# Create two columns
+col1, col2 = st.columns(2)
+
+
+# Put placeholders in columns
+with col1:
+   st.write('Homers:')
+   df2_placeholder = st.empty()
+   #st.placeholder1 = st.empty()  # Placeholder in column 1
+
+with col2:
+   st.write('Top EVs:')
+   df3_placeholder = st.empty()
+
+#st.write('Homers:')
+#df2_placeholder = st.empty()
+#st.write('Top EVs:')
+#df3_placeholder = st.empty()
 
 #################
 
@@ -522,7 +539,7 @@ while True:
         pdata.columns=['Pitcher','ID','Team','TBF','IP','SO','BB','H','HR','PC','Whiffs','Strikes','SwStr%','Strike%','Ball%','GB%','LD%','FB%','Brl%']
         pdata['Current Pitcher?'] = np.where(pdata['Pitcher'].isin(cplist),'Y','N')
         showdf = pdata.copy()
-        df = showdf[['Pitcher','Team','PC','SO','BB','Whiffs','SwStr%','Current Pitcher?']].sort_values(by=['Current Pitcher?','PC'],ascending=False)
+        df = showdf[['Pitcher','Team','IP','PC','SO','BB','Whiffs','SwStr%','Strike%','Ball%','Current Pitcher?']].sort_values(by=['Whiffs'],ascending=False)
 
         ## Hitter stuff
         hrs = livedb[livedb['IsHomer']==1][['BatterName','BatterTeam_aff','player_name','launch_speed','play_desc']].sort_values(by='launch_speed',ascending=False)
