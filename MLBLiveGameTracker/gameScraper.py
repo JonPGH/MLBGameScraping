@@ -543,11 +543,11 @@ while True:
     except:
        pass
     try:
-       df2_placeholder.dataframe(hrs,width=500, height=200, hide_index=True)
+       df2_placeholder.dataframe(hrs,width=800, height=200, hide_index=True)
     except:
        pass
     try:
-       df3_placeholder.dataframe(evs,width=500, height=200, hide_index=True)
+       df3_placeholder.dataframe(evs,width=800, height=200, hide_index=True)
     except:
        pass
     
