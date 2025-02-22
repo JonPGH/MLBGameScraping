@@ -437,7 +437,7 @@ while True:
     import datetime
     now_eastern = datetime.datetime.now(eastern)
     current_time = now_eastern.strftime("%I:%M")
-    header_placeholder.title('Live MLB Game Data (last update: {})'.format(current_time))
+    header_placeholder.title('@JonPGH Live MLB Game Data (last update: {})'.format(current_time))
 
     ###### CHECK FOR GAMES ######
     gameslive = 'N'
