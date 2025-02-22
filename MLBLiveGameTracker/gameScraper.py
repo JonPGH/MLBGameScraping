@@ -413,14 +413,14 @@ header_placeholder = st.empty()
 #st.set_page_config(layout="wide")
 
 # Create two columns for side-by-side display
-col1, col2 = st.columns([2,5])
+#col1 = st.columns([2,5])
     
 # Create placeholders for the DataFrames
 with col1:
     df1_placeholder = st.empty()
 
-with col2:
-    df2_placeholder = st.empty()
+#with col2:
+    #df2_placeholder = st.empty()
 
 #################
 
@@ -429,7 +429,7 @@ st.write('Last update at {}'.format(now_eastern))
 st.write('\n\n')
 x = 0
 while x != 1:
-    header_placeholder.title('Jons MLB Scrape (last update: {}'.format(now_eastern))
+    header_placeholder.title('Jons MLB Scrape (last update: {}'.format(today_str))
 
     x = x+1
     #st.write(x)
@@ -517,8 +517,8 @@ while x != 1:
     with col1:
         df1_placeholder.dataframe(df, hide_index=True)
     
-    with col2:
-        df2_placeholder.dataframe(hrs, hide_index=True)
+    #with col2:
+        #df2_placeholder.dataframe(hrs, hide_index=True)
     
     #placeholder.write(df)
     time.sleep(5)
