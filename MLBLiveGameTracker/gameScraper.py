@@ -377,6 +377,13 @@ def savAddOns(savdata):
 
   return(pdf)
 
+def highlight_rows_sp(row):
+    # Example condition: highlight rows where Score > 90
+    if row['Current Pitcher?'] == 'Y':
+        return ['background-color: lightskyblue'] * len(row)
+    else:
+        return [''] * len(row)
+
 # Get the directory where the script is located
 base_dir = os.path.dirname(__file__)
 # Construct the path to the file
@@ -500,8 +507,6 @@ while True:
                 pass
 
         if len(livedb)==0:
-            print('No data, waiting 6 [seconds]]')
-            time.sleep(6)
             continue
         livedb = savAddOns(livedb)
 
@@ -540,6 +545,11 @@ while True:
         pdata['Current Pitcher?'] = np.where(pdata['Pitcher'].isin(cplist),'Y','N')
         showdf = pdata.copy()
         df = showdf[['Pitcher','Team','IP','PC','SO','BB','Whiffs','SwStr%','Strike%','Ball%','Current Pitcher?']].sort_values(by=['Whiffs'],ascending=False)
+        df['SwStr%'] = round(df['SwStr%'],3)
+        df['Strike%'] = round(df['Strike%'],3)
+        df['Ball%'] = round(df['Ball%'],3)
+        df['IP'] = round(df['IP'],1)
+
 
         ## Hitter stuff
         hrs = livedb[livedb['IsHomer']==1][['BatterName','BatterTeam_aff','player_name','launch_speed','play_desc']].sort_values(by='launch_speed',ascending=False)
@@ -554,7 +564,15 @@ while True:
     #hrs = pd.DataFrame({'BatterName': 'Luis Robert', 'BatterTeam_aff': 'CWS', 'player_name': 'Mitch Keller', 'launch_speed': 105, 'play_desc': 'desecription'}, index=[0])
     #st.dataframe(df,hide_index=True, width=800, height=200)
     
-    
+    df['IP'] = round(df['IP'],1)
+    df['SwStr%'] = round(df['SwStr%'],3)
+    styled_df = df.style.apply(highlight_rows_sp, axis=1)
+    #styled_df['SwStr%'] = round(styled_df['SwStr%'],3)
+    #styled_df['Strike%'] = round(styled_df['Strike%'],3)
+    #styled_df['Ball%'] = round(styled_df['Ball%'],3)
+    #styled_df['IP'] = round(styled_df['IP'],1)
+
+
     try:
        df1_placeholder.dataframe(df,width=800, height=200, hide_index=True)
     except:
@@ -568,6 +586,7 @@ while True:
     except:
        pass
     
+    print('waiting 30 seconds to refresh')
     time.sleep(30)
     
     #try:
