@@ -2,6 +2,13 @@ from datetime import datetime, timezone
 import time 
 import pytz, streamlit as st, requests, pandas as pd, os, numpy as np
 
+st.set_page_config(
+    page_title="JonPGH MLB Game Tracker",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+
 # Functions
 def dropUnnamed(df):
   df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
@@ -402,52 +409,63 @@ eastern = pytz.timezone('US/Eastern')
 now_eastern = datetime.now(eastern)
 now_date = now_eastern.date()
 today_str = now_date.strftime("%Y-%m-%d")
-#print('Set date: {}'.format(today_str))
-
-#placeholder = st.empty()
 
 header_placeholder = st.empty()
 
-######################
-# two placeholders?
-#st.set_page_config(layout="wide")
+today_games = getLiveGames(today_str)
+today_games_df = pd.DataFrame(today_games)
+today_games_df['game_start_time_et'] = pd.to_datetime(today_games_df['game_start_time']).dt.tz_convert('US/Eastern')
 
+today_games_df['game_time'] = pd.to_datetime(today_games_df['game_start_time_et']).dt.strftime('%I:%M %p')
+
+show_sched = today_games_df[['date','game_time','away_team','home_team','game_status']]
+show_sched.columns=['Date','Time','Away','Home','Status']
+st.dataframe(show_sched,hide_index=True)
 
 # Create placeholders for the DataFrames
 df1_placeholder = st.empty()
-
 #################
 
-st.write('Looking for game data from {}'.format(today_str))
-st.write('Last update at {}'.format(now_eastern))
-st.write('\n\n')
-x = 0
-while x != 1:
-    header_placeholder.title('Jons MLB Scrape (last update: {}'.format(today_str))
+while True:
+    eastern = pytz.timezone('US/Eastern')
+    import datetime
+    now_eastern = datetime.datetime.now(eastern)
+    current_time = now_eastern.strftime("%I:%M")
+    header_placeholder.title('Live MLB Game Data (last update: {})'.format(current_time))
 
-    x = x+1
-    #st.write(x)
-    #try:
-    today_games = getLiveGames(today_str)
-    #st.write(today_games)
-    gamestatuslist = []
-    for game in today_games:
-        game_status = game.get('game_status')
-        gamestatuslist.append(game_status)
+    ###### CHECK FOR GAMES ######
+    gameslive = 'N'
+    while gameslive != 'Y':
+      today_games = getLiveGames(today_str)
+      
+      gamestatuslist = []
+      for game in today_games:
+          game_status = game.get('game_status')
+          gamestatuslist.append(game_status)
 
-    if 'P' in gamestatuslist or 'I' in gamestatuslist:
-        killswitch = 'N'
-        if 'I' not in gamestatuslist:
-            st.write('No live games, but more coming, waiting 10 minutes')
-            time.sleep(1)
-        pass
-    else:
-        killswitch = 'Y'
+      if ('I' not in gamestatuslist) and ('S' not in gamestatuslist) and ('P' not in gamestatuslist):
+         st.write('All games today are complete.')
+         st.stop()
 
+      if 'I' not in gamestatuslist:
+          if 'I' not in gamestatuslist:
+              st.write('No live games, but more coming, waiting 10 minutes')
+              gameslive = 'N'
+              time.sleep(60*10)
+          pass
+      else:
+          gameslive = 'Y'
 
+    #######################
     livedb = pd.DataFrame()
+    st.write('FOUND LIVE GAME!')
     for game in today_games:
         game_status = game.get('game_status')
+        if game_status != 'I':
+           continue
+        elif game_status == 'I':
+           st.write('Found live game')
+        
         gamedb = get_MILB_PBP_Live(game)
 
         if len(gamedb) == 0:
@@ -499,21 +517,13 @@ while x != 1:
         pdata.columns=['Pitcher','ID','Team','TBF','IP','SO','BB','H','HR','PC','Whiffs','Strikes','SwStr%','Strike%','Ball%','GB%','LD%','FB%','Brl%']
         pdata['Current Pitcher?'] = np.where(pdata['Pitcher'].isin(cplist),'Y','N')
         showdf = pdata.copy()
-        df = showdf[['Pitcher','Team','PC','Whiffs','SwStr%','Current Pitcher?']].sort_values(by=['Current Pitcher?','PC'],ascending=False)
+        df = showdf[['Pitcher','Team','PC','SO','BB','Whiffs','SwStr%','Current Pitcher?']].sort_values(by=['Current Pitcher?','PC'],ascending=False)
 
         ## Hitter stuff
         hrs = livedb[livedb['IsHomer']==1][['BatterName','BatterTeam_aff','player_name','launch_speed','play_desc']].sort_values(by='launch_speed',ascending=False)
-    #st.dataframe(df)
     
-    df1_placeholder.dataframe(df, hide_index=True)
-    
-    #with col2:
-        #df2_placeholder.dataframe(hrs, hide_index=True)
-    
-    #placeholder.write(df)
-    time.sleep(5)
-
-    st.write('Refreshing...')
-    #except:
-        #st.write('Problem found!')
-
+    try:
+      df1_placeholder.dataframe(df, hide_index=True)
+      time.sleep(30)
+    except:
+       st.write('No game data to display')   
