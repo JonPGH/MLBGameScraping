@@ -370,20 +370,29 @@ def savAddOns(savdata):
 
   return(pdf)
 
+# Get the directory where the script is located
+base_dir = os.path.dirname(__file__)
+# Construct the path to the file
+file_path = os.path.join(base_dir, 'Files')
+
 
 # Data Imports
-league_lev_df = pd.read_csv('/Users/jonanderson/Desktop/Python/MLBGameScraping/Files/LeagueLevels.csv')
+#league_lev_df = pd.read_csv('{}/LeagueLevels.csv')
+
+league_lev_df = pd.read_csv('{}/LeagueLevels.csv'.format(file_path))
+st.dataframe(league_lev_df)
+#league_lev_df = pd.read_csv('/Users/jonanderson/Desktop/Python/MLBGameScraping/Files/LeagueLevels.csv')
 levdict = dict(zip(league_lev_df.league_name,league_lev_df.level))
 
-affdf = pd.read_csv('/Users/jonanderson/Desktop/Python/MLBGameScraping/Files/Team_Affiliates.csv')
+affdf = pd.read_csv('{}/Team_Affiliates.csv'.format(file_path))
 affdict = dict(zip(affdf.team_id, affdf.parent_id))
 affdict_abbrevs = dict(zip(affdf.team_id, affdf.parent_abbrev))
 
 team_abbrev_look = dict(zip(affdf.team_name,affdf.team_abbrev))
-idlookup_df = pd.read_csv('/Users/jonanderson/Desktop/Python/MLBGameScraping/Files/IDLookupTable.csv')
+idlookup_df = pd.read_csv('{}/IDLookupTable.csv'.format(file_path))
 p_lookup_dict = dict(zip(idlookup_df.MLBID, idlookup_df.PLAYERNAME))
 
-lsaclass = pd.read_csv('/Users/jonanderson/Desktop/Python/MLBGameScraping/Files/lsaclass.csv')
+lsaclass = pd.read_csv('{}/lsaclass.csv'.format(file_path))
 lsaclass = dropUnnamed(lsaclass)
 lsaclass['launch_speed'] = round(lsaclass['launch_speed'],0)
 lsaclass['launch_angle'] = round(lsaclass['launch_angle'],0)
@@ -421,7 +430,7 @@ st.write('Looking for game data from {}'.format(today_str))
 st.write('Last update at {}'.format(now_eastern))
 st.write('\n\n')
 x = 0
-while x != 8:
+while x != 1:
     header_placeholder.title('Jons MLB Scrape (last update: {}'.format(x))
 
     x = x+1
@@ -514,7 +523,7 @@ while x != 8:
         df2_placeholder.dataframe(hrs, hide_index=True)
     
     #placeholder.write(df)
-    time.sleep(10)
+    time.sleep(5)
 
     st.write('Refreshing...')
     #except:
