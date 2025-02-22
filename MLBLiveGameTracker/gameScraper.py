@@ -412,15 +412,9 @@ header_placeholder = st.empty()
 # two placeholders?
 #st.set_page_config(layout="wide")
 
-# Create two columns for side-by-side display
-#col1 = st.columns([2,5])
-    
-# Create placeholders for the DataFrames
-with col1:
-    df1_placeholder = st.empty()
 
-#with col2:
-    #df2_placeholder = st.empty()
+# Create placeholders for the DataFrames
+df1_placeholder = st.empty()
 
 #################
 
@@ -511,11 +505,7 @@ while x != 1:
         hrs = livedb[livedb['IsHomer']==1][['BatterName','BatterTeam_aff','player_name','launch_speed','play_desc']].sort_values(by='launch_speed',ascending=False)
     #st.dataframe(df)
     
-    # Update the DataFrames
-  
-    # Display updated DataFrames without index
-    with col1:
-        df1_placeholder.dataframe(df, hide_index=True)
+    df1_placeholder.dataframe(df, hide_index=True)
     
     #with col2:
         #df2_placeholder.dataframe(hrs, hide_index=True)
