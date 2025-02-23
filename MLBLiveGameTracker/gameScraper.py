@@ -389,7 +389,6 @@ base_dir = os.path.dirname(__file__)
 # Construct the path to the file
 file_path = os.path.join(base_dir, 'Files')
 
-
 # Data Imports
 #league_lev_df = pd.read_csv('{}/LeagueLevels.csv')
 
@@ -449,11 +448,8 @@ with col2:
    st.write('Top EVs:')
    df3_placeholder = st.empty()
 
-#st.write('Homers:')
-#df2_placeholder = st.empty()
-#st.write('Top EVs:')
-#df3_placeholder = st.empty()
-
+st.write('Pitch Mix Data')
+df4_placeholder = st.empty()
 #################
 
 while True:
@@ -473,7 +469,6 @@ while True:
           game_status = game.get('game_status')
           gamestatuslist.append(game_status)
 
-
       if ('I' not in gamestatuslist) and ('S' not in gamestatuslist) and ('P' not in gamestatuslist):
          st.write('All games today are complete.')
          st.stop()
@@ -489,10 +484,10 @@ while True:
 
     #######################
     livedb = pd.DataFrame()
-    #st.write('FOUND LIVE GAME!')
+
     for game in today_games:
         game_status = game.get('game_status')
-        if game_status != 'I' or game_status != 'F':
+        if game_status != 'I' and game_status != 'F':
            continue
         
         gamedb = get_MILB_PBP_Live(game)
@@ -543,6 +538,7 @@ while True:
         pdata = pdata[['player_name','pitcher','PitcherTeam_aff','PA_flag','IP','IsStrikeout','IsWalk','IsHit','IsHomer','PitchesThrown','IsSwStr','IsStrike','SwStr%','Strike%','Ball%','GB%','LD%','FB%','Brl%']]
         pdata.columns=['Pitcher','ID','Team','TBF','IP','SO','BB','H','HR','PC','Whiffs','Strikes','SwStr%','Strike%','Ball%','GB%','LD%','FB%','Brl%']
         pdata['Current Pitcher?'] = np.where(pdata['Pitcher'].isin(cplist),'Y','N')
+        
         showdf = pdata.copy()
         df = showdf[['Pitcher','Team','IP','PC','SO','BB','Whiffs','SwStr%','Strike%','Ball%','Current Pitcher?']].sort_values(by=['Whiffs'],ascending=False)
         df['SwStr%'] = round(df['SwStr%'],3)
@@ -550,6 +546,21 @@ while True:
         df['Ball%'] = round(df['Ball%'],3)
         df['IP'] = round(df['IP'],1)
 
+        ## by pitch
+        velodata = livedb.groupby(['player_name','PitcherTeam_aff','pitch_type'],as_index=False)['release_speed'].mean()
+        velodata = velodata.round(1)
+        velodata.columns=['Pitcher','Team','Pitch','Velo']
+
+
+        mixdata = livedb.groupby(['player_name','pitcher','PitcherTeam_aff','pitch_type'],as_index=False)[['PitchesThrown','IsStrike','IsBall','IsBIP','IsHit','IsHomer','IsSwStr','IsGB','IsLD','IsFB','IsBrl','PA_flag','DP','IsStrikeout','IsWalk']].sum()
+        mixdata['SwStr%'] = round(mixdata['IsSwStr']/mixdata['PitchesThrown'],3)
+        mixdata['Strike%'] = round(mixdata['IsStrike']/mixdata['PitchesThrown'],3)
+        mixdata['Ball%'] = round(mixdata['IsBall']/mixdata['PitchesThrown'],3)
+        mixdata['Brl%'] = round(mixdata['IsBrl']/mixdata['IsBIP'],3)
+        mixdata = mixdata[['player_name','PitcherTeam_aff','pitch_type','PitchesThrown','IsSwStr','SwStr%','Strike%','Ball%','Brl%']]
+        mixdata.columns=['Pitcher','Team','Pitch','PC','Whiffs','SwStr%','Strike%','Ball%','Brl%']
+        mixdata = pd.merge(mixdata,velodata,on=['Pitcher','Team','Pitch'])
+        mixdata = mixdata[['Pitcher','Team','Pitch','PC','Velo','Whiffs','SwStr%','Strike%','Ball%','Brl%']]
 
         ## Hitter stuff
         hrs = livedb[livedb['IsHomer']==1][['BatterName','BatterTeam_aff','player_name','launch_speed','play_desc']].sort_values(by='launch_speed',ascending=False)
@@ -557,16 +568,14 @@ while True:
         
         evs = livedb[['BatterName','BatterTeam_aff','player_name','launch_speed','play_desc']].sort_values(by='launch_speed',ascending=False)
         evs.columns=['Hitter','Team','Pitcher','EV','Description']
-    
-    #df = pd.DataFrame({'Pitcher': ['Pitcher1','Pitcher2','Pitcher3'], 'Team': ['STL','PIT','CHC'],
-    #                       'PC': [10,15,20], 'SO': [1,2,3],
-    #                       'BB': [1,2,3], 'Whiffs': [1,2,3], 'SwStr%': [.1,.11,.12], 'Current Pitcher?': ['Y','N','N']})
-    #hrs = pd.DataFrame({'BatterName': 'Luis Robert', 'BatterTeam_aff': 'CWS', 'player_name': 'Mitch Keller', 'launch_speed': 105, 'play_desc': 'desecription'}, index=[0])
-    #st.dataframe(df,hide_index=True, width=800, height=200)
-    
-    df['IP'] = round(df['IP'],1)
-    df['SwStr%'] = round(df['SwStr%'],3)
-    styled_df = df.style.apply(highlight_rows_sp, axis=1)
+
+    st.dataframe(livedb)
+    try:
+      df['IP'] = round(df['IP'],1)
+      df['SwStr%'] = round(df['SwStr%'],3)
+      styled_df = df.style.apply(highlight_rows_sp, axis=1)
+    except:
+      styled_df = pd.DataFrame()
     #styled_df['SwStr%'] = round(styled_df['SwStr%'],3)
     #styled_df['Strike%'] = round(styled_df['Strike%'],3)
     #styled_df['Ball%'] = round(styled_df['Ball%'],3)
@@ -585,6 +594,11 @@ while True:
        df3_placeholder.dataframe(evs,width=800, height=200, hide_index=True)
     except:
        pass
+    
+    try:
+      df4_placeholder.dataframe(mixdata,width=1000, height=200, hide_index=True)
+    except:
+      pass
     
     print('waiting 30 seconds to refresh')
     time.sleep(30)
