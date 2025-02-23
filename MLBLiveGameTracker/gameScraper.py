@@ -563,11 +563,17 @@ while True:
         mixdata = mixdata[['Pitcher','Team','Pitch','PC','Velo','Whiffs','SwStr%','Strike%','Ball%','Brl%']]
 
         ## Hitter stuff
-        hrs = livedb[livedb['IsHomer']==1][['BatterName','BatterTeam_aff','player_name','launch_speed','play_desc']].sort_values(by='launch_speed',ascending=False)
-        hrs.columns=['Hitter','Team','Pitcher','EV','Description']
+        try:
+          hrs = livedb[livedb['IsHomer']==1][['BatterName','BatterTeam_aff','player_name','launch_speed','play_desc']].sort_values(by='launch_speed',ascending=False)
+          hrs.columns=['Hitter','Team','Pitcher','EV','Description']
+        except:
+          hrs = pd.DataFrame(columns=['Hitter','Team','Pitcher','EV','Description'])
         
-        evs = livedb[['BatterName','BatterTeam_aff','player_name','launch_speed','play_desc']].sort_values(by='launch_speed',ascending=False)
-        evs.columns=['Hitter','Team','Pitcher','EV','Description']
+        try:
+          evs = livedb[['BatterName','BatterTeam_aff','player_name','launch_speed','play_desc']].sort_values(by='launch_speed',ascending=False)
+          evs.columns=['Hitter','Team','Pitcher','EV','Description']
+        except:
+          evs = pd.DataFrame(columns=['Hitter','Team','Pitcher','EV','Description'])
 
     st.dataframe(livedb)
     try:
