@@ -588,7 +588,7 @@ while True:
 
 
     try:
-       df1_placeholder.dataframe(df,width=800, height=200, hide_index=True)
+       df1_placeholder.dataframe(df,width=800, height=600, hide_index=True)
     except:
        pass
     try:
