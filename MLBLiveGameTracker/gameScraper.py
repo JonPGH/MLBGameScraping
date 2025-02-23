@@ -575,7 +575,6 @@ while True:
         except:
           evs = pd.DataFrame(columns=['Hitter','Team','Pitcher','EV','Description'])
 
-    st.dataframe(livedb)
     try:
       df['IP'] = round(df['IP'],1)
       df['SwStr%'] = round(df['SwStr%'],3)
