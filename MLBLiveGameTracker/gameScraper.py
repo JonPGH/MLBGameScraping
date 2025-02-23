@@ -601,7 +601,7 @@ while True:
        pass
     
     try:
-      df4_placeholder.dataframe(mixdata,width=1000, height=200, hide_index=True)
+      df4_placeholder.dataframe(mixdata,width=1000, height=1200, hide_index=True)
     except:
       pass
     
