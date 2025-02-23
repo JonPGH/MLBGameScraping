@@ -551,7 +551,6 @@ while True:
         velodata = velodata.round(1)
         velodata.columns=['Pitcher','Team','Pitch','Velo']
 
-
         mixdata = livedb.groupby(['player_name','pitcher','PitcherTeam_aff','pitch_type'],as_index=False)[['PitchesThrown','IsStrike','IsBall','IsBIP','IsHit','IsHomer','IsSwStr','IsGB','IsLD','IsFB','IsBrl','PA_flag','DP','IsStrikeout','IsWalk']].sum()
         mixdata['SwStr%'] = round(mixdata['IsSwStr']/mixdata['PitchesThrown'],3)
         mixdata['Strike%'] = round(mixdata['IsStrike']/mixdata['PitchesThrown'],3)
@@ -601,10 +600,35 @@ while True:
        pass
     
     try:
-      df4_placeholder.dataframe(mixdata,width=1000, height=1200, hide_index=True)
+      df4_placeholder.dataframe(mixdata,width=1000, height=850, hide_index=True)
     except:
       pass
     
+    # TRY FILTERING
+    # Initialize session state for filter persistence
+    #if "selected_team" not in st.session_state:
+       #st.session_state.selected_team = "All"
+    
+    # Sidebar for filters
+    #st.sidebar.header("Filters")
+
+    # Team filter
+    #teams = ["All"] + list(df["Team"].unique())
+    #selected_team = st.sidebar.selectbox(
+        #"Select Team",
+        #options=teams,
+        #index=teams.index(st.session_state.selected_team)
+    #)
+    #t.session_state.selected_team = selected_team
+
+    #filtered_df = df.copy()
+    #if selected_team != "All":
+       #filtered_df = filtered_df[filtered_df["Team"] == selected_team]
+      
+    #st.dataframe(filtered_df)
+
+
+
     print('waiting 30 seconds to refresh')
     time.sleep(30)
     
