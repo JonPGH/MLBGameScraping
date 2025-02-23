@@ -492,7 +492,7 @@ while True:
     #st.write('FOUND LIVE GAME!')
     for game in today_games:
         game_status = game.get('game_status')
-        if game_status != 'I':
+        if game_status != 'I' or game_status != 'F':
            continue
         
         gamedb = get_MILB_PBP_Live(game)
