@@ -779,25 +779,25 @@ while True:
 
 
     try:
-       scoreboard_placeholder.dataframe(scoreboard_df,width=300, height=400, hide_index=True)
+       scoreboard_placeholder.dataframe(scoreboard_df,width=300, height=525, hide_index=True)
     except:
        pass
     
     todays_steals = todays_steals.sort_values(by=['SB','Team'], ascending=[False,True])
     try:
-      sb_placeholder.dataframe(todays_steals,width=550, height=300, hide_index=True)
+      sb_placeholder.dataframe(todays_steals,width=550, height=525, hide_index=True)
     except:
       pass
     
     todays_homers = todays_homers.sort_values(by=['HR','Team'], ascending=[False,True])
     try:
-      hr_placeholder.dataframe(todays_homers,width=550, height=300, hide_index=True)
+      hr_placeholder.dataframe(todays_homers,width=550, height=525, hide_index=True)
     except:
       pass
 
     todays_dkpts = todays_dkpts.sort_values(by='DKPts',ascending=False).head(15)
     try:
-       dk_placeholder.dataframe(todays_dkpts,width=550, height=300, hide_index=True)
+       dk_placeholder.dataframe(todays_dkpts,width=550, height=525, hide_index=True)
     except:
        pass
 
