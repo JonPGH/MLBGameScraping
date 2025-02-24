@@ -795,6 +795,7 @@ while True:
     except:
       pass
 
+    todays_dkpts = todays_dkpts.sort_values(by='DKPts',ascending=False).head(15)
     try:
        dk_placeholder.dataframe(todays_dkpts,width=550, height=300, hide_index=True)
     except:
