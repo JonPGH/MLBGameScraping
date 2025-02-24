@@ -225,6 +225,100 @@ def get_MILB_PBP_Live(game_info_dict):
   #gamepbp.to_csv('/content/drive/My Drive/FLB/2024/LiveGames/AllPlayByPlay/{}_pbp.csv'.format(game_pk))
   return(gamepbp)
 
+def get_game_logs(game):
+    batting_logs = []
+    pitching_logs = []
+    url = "https://statsapi.mlb.com/api/v1/game/{}/boxscore".format(game["game_id"])
+    game_info = requests.get(url).json()
+    lgname=game_info.get('teams').get('away').get('team').get('league').get('name')
+
+    away_team = game_info.get('teams').get('away').get('team').get('name')
+    away_team_id =  game_info.get('teams').get('away').get('team').get('id')
+    home_team = game_info.get('teams').get('home').get('team').get('name')
+    home_team_id = game_info.get('teams').get('home').get('team').get('id')
+
+    if "teams" in game_info:
+        for team in game_info["teams"].values():
+            team_id = team.get('team').get('id')
+            for player in team["players"].values():
+                if player["stats"]["batting"]:
+                    batting_log = {}
+                    batting_log["game_date"] = game["date"]
+                    batting_log["game_id"] = int(game["game_id"])
+                    batting_log["league_name"] = lgname
+                    batting_log["level"] = game["league_level"]
+                    batting_log["Team"] = team.get('team').get('name')
+                    batting_log["team_id"] = team_id
+                    batting_log["home_team"] = home_team
+                    batting_log["game_type"] = game["game_type"]
+                    batting_log["venue_id"] = int(game["venue_id"])
+                    batting_log["league_id"] = int(game["league_id"])
+                    batting_log["Player"] = player["person"]["fullName"]
+                    batting_log["player_id"] = int(player["person"]["id"])
+                    batting_log["batting_order"] = player.get("battingOrder", "")
+                    batting_log["AB"] = int(player["stats"]["batting"]["atBats"])
+                    batting_log["R"] = int(player["stats"]["batting"]["runs"])
+                    batting_log["H"] = int(player["stats"]["batting"]["hits"])
+                    batting_log["2B"] = int(player["stats"]["batting"]["doubles"])
+                    batting_log["3B"] = int(player["stats"]["batting"]["triples"])
+                    batting_log["HR"] = int(player["stats"]["batting"]["homeRuns"])
+                    batting_log["RBI"] = int(player["stats"]["batting"]["rbi"])
+                    batting_log["SB"] = int(player["stats"]["batting"]["stolenBases"])
+                    batting_log["CS"] = int(player["stats"]["batting"]["caughtStealing"])
+                    batting_log["BB"] = int(player["stats"]["batting"]["baseOnBalls"])
+                    batting_log["SO"] = int(player["stats"]["batting"]["strikeOuts"])
+                    batting_log["IBB"] = int(player["stats"]["batting"]["intentionalWalks"])
+                    batting_log["HBP"] = int(player["stats"]["batting"]["hitByPitch"])
+                    batting_log["SH"] = int(player["stats"]["batting"]["sacBunts"])
+                    batting_log["SF"] = int(player["stats"]["batting"]["sacFlies"])
+                    batting_log["GIDP"] = int(player["stats"]["batting"]["groundIntoDoublePlay"])
+
+                    batting_logs.append(batting_log)
+
+                if player["stats"]["pitching"]:
+                    pitching_log = {}
+                    pitching_log["game_date"] = game["date"]
+                    pitching_log["game_id"] = int(game["game_id"])
+                    pitching_log["league_name"] = lgname
+                    pitching_log["level"] = game["league_level"]
+                    pitching_log["Team"] = team.get('team').get('name')
+                    pitching_log["team_id"] = team_id
+                    pitching_log["home_team"] = home_team
+                    pitching_log["game_type"] = game["game_type"]
+                    pitching_log["venue_id"] = int(game["venue_id"])
+                    pitching_log["league_id"] = int(game["league_id"])
+                    pitching_log["Player"] = player["person"]["fullName"]
+                    pitching_log["player_id"] = int(player["person"]["id"])
+                    pitching_log["W"] = int(player["stats"]["pitching"].get("wins", ""))
+                    pitching_log["L"] = int(player["stats"]["pitching"].get("losses", ""))
+                    pitching_log["G"] = int(player["stats"]["pitching"].get("gamesPlayed", ""))
+                    pitching_log["GS"] = int(player["stats"]["pitching"].get("gamesStarted", ""))
+                    pitching_log["CG"] = int(player["stats"]["pitching"].get("completeGames", ""))
+                    pitching_log["SHO"] = int(player["stats"]["pitching"].get("shutouts", ""))
+                    pitching_log["SV"] = int(player["stats"]["pitching"].get("saves", ""))
+                    pitching_log["HLD"] = int(player["stats"]["pitching"].get("holds", ""))
+                    pitching_log["BFP"] = int(player["stats"]["pitching"].get("battersFaced", ""))
+                    pitching_log["IP"] = float(player["stats"]["pitching"].get("inningsPitched", ""))
+                    pitching_log["H"] = int(player["stats"]["pitching"].get("hits", ""))
+                    pitching_log["ER"] = int(player["stats"]["pitching"].get("earnedRuns", ""))
+                    pitching_log["R"] = int(player["stats"]["pitching"].get("runs", ""))
+                    pitching_log["HR"] = int(player["stats"]["pitching"].get("homeRuns", ""))
+                    pitching_log["SO"] = int(player["stats"]["pitching"].get("strikeOuts", ""))
+                    pitching_log["BB"] = int(player["stats"]["pitching"].get("baseOnBalls", ""))
+                    pitching_log["IBB"] = int(player["stats"]["pitching"].get("intentionalWalks", ""))
+                    pitching_log["HBP"] = int(player["stats"]["pitching"].get("hitByPitch", ""))
+                    pitching_log["WP"] = int(player["stats"]["pitching"].get("wildPitches", ""))
+                    pitching_log["BK"] = int(player["stats"]["pitching"].get("balks", ""))
+
+                    if pitching_log["GS"] > 0 and pitching_log["IP"] >= 6 and pitching_log["ER"] <= 3:
+                        pitching_log["QS"] = 1
+                    else:
+                        pitching_log["QS"] = 0
+
+                    pitching_logs.append(pitching_log)
+
+    return batting_logs, pitching_logs
+
 def savAddOns(savdata):
   pdf = savdata.copy()
 
@@ -390,10 +484,11 @@ base_dir = os.path.dirname(__file__)
 file_path = os.path.join(base_dir, 'Files')
 
 # Data Imports
-#league_lev_df = pd.read_csv('{}/LeagueLevels.csv')
+teamnamechangedf = pd.read_csv('{}/mlbteamnamechange.csv'.format(file_path))
+teamnamechangedict = dict(zip(teamnamechangedf.Full, teamnamechangedf.Abbrev))
+teamnamedict = dict(zip(teamnamechangedf.Full, teamnamechangedf.Abbrev))
 
 league_lev_df = pd.read_csv('{}/LeagueLevels.csv'.format(file_path))
-#league_lev_df = pd.read_csv('/Users/jonanderson/Desktop/Python/MLBGameScraping/Files/LeagueLevels.csv')
 levdict = dict(zip(league_lev_df.league_name,league_lev_df.level))
 
 affdf = pd.read_csv('{}/Team_Affiliates.csv'.format(file_path))
@@ -424,10 +519,35 @@ today_games_df['game_start_time_et'] = pd.to_datetime(today_games_df['game_start
 
 today_games_df['game_time'] = pd.to_datetime(today_games_df['game_start_time_et']).dt.strftime('%I:%M %p')
 
+#### SHOW SCOREBOARD ####
 show_sched = today_games_df[['date','game_time','away_team','home_team','game_status']]
-show_sched.columns=['Date','Time','Away','Home','Status']
-show_sched = show_sched[show_sched['Status']=='I']
-st.dataframe(show_sched,hide_index=True, width=800, height=200)
+show_sched = show_sched[show_sched['game_status']=='I']
+show_sched = today_games_df[['date','game_time','away_team','home_team']]
+show_sched.columns=['Date','Time','Away','Home']
+
+show_sched['Away'] = show_sched['Away'].replace(teamnamedict)
+show_sched['Home'] = show_sched['Home'].replace(teamnamedict)
+###########################
+
+## SCOREBOARD PLACEHOLDER
+# Create three columns
+col1, col2, col3, col4 = st.columns(4)
+#col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
+
+with col1:
+  st.write('Scoreboard')
+  scoreboard_placeholder = st.empty()
+with col2:
+   st.write('Todays Steals:')
+   sb_placeholder = st.empty()
+with col3:
+   st.write('Todays Home Runs:')
+   hr_placeholder = st.empty()
+with col4:
+   st.write('Todays DK Leaders:')
+   dk_placeholder = st.empty()
+#################
+
 
 # Create placeholders for the DataFrames
 st.write('Pitcher Data:')
@@ -437,10 +557,9 @@ df1_placeholder = st.empty()
 # Create two columns
 col1, col2 = st.columns(2)
 
-
 # Put placeholders in columns
 with col1:
-   st.write('Homers:')
+   st.write('Homer Details:')
    df2_placeholder = st.empty()
    #st.placeholder1 = st.empty()  # Placeholder in column 1
 
@@ -450,9 +569,10 @@ with col2:
 
 st.write('Pitch Mix Data')
 df4_placeholder = st.empty()
-#################
+
 
 while True:
+    scoreboard_df = pd.DataFrame()
     eastern = pytz.timezone('US/Eastern')
     import datetime
     now_eastern = datetime.datetime.now(eastern)
@@ -484,12 +604,85 @@ while True:
 
     #######################
     livedb = pd.DataFrame()
+    todays_steals = pd.DataFrame()
+    todays_dkpts = pd.DataFrame()
+    todays_homers = pd.DataFrame()
+
+    all_matchups = {}
 
     for game in today_games:
         game_status = game.get('game_status')
         if game_status != 'I' and game_status != 'F':
            continue
         
+        ## BOX SCORE ## 
+        game_box = get_game_logs(game)
+        hitbox_json = game_box[0]
+        hitbox = pd.DataFrame(hitbox_json)
+        #print('Retrieved box score for game in {}'.format(hitbox['home_team'].iloc[0]))
+        hitbox['1B'] = hitbox['H']-hitbox['2B']-hitbox['3B']-hitbox['HR']
+        hitbox = hitbox[['Player','player_id','batting_order','Team','home_team','AB','R','H','1B','2B','3B','HR','RBI','SB','CS','BB','SO','HBP']]
+        hitbox['Team'] = hitbox['Team'].replace(teamnamedict)
+        hitbox['home_team'] = hitbox['home_team'].replace(teamnamedict)
+        pitbox_json = game_box[1]
+        pitbox = pd.DataFrame(pitbox_json)
+        pitbox = pitbox[['Player','player_id','Team','home_team','G','GS','IP','H','ER','R','HR','SO','BB','IBB','HBP','QS','W']]
+        pitbox['Team'] = pitbox['Team'].replace(teamnamedict)
+        pitbox['home_team'] = pitbox['home_team'].replace(teamnamedict)
+
+        hitbox['DKPts'] = (hitbox['1B']*3)+(hitbox['2B']*5)+(hitbox['3B']*8)+(hitbox['HR']*10)+(hitbox['SB']*5)+(hitbox['BB']*2)+(hitbox['HBP']*2)+(hitbox['R']*2)+(hitbox['RBI']*2)
+        pitbox['DKPts'] = (pitbox['IP']*2.25)+(pitbox['SO']*2)+(pitbox['W']*4)+(pitbox['ER']*-2)+(pitbox['H']*-.6)+(pitbox['BB']*-.6)
+
+        ## CREATE SCOREBOARD OUT OF HIT BOX 
+        teams = hitbox['Team'].unique()
+        this_mu = {teams[0]:teams[1], teams[1]:teams[0]}
+        this_hometeams = dict(zip(hitbox.Team,hitbox.home_team))
+
+        home_team = list(this_hometeams.values())[0]
+        for xteam in teams:
+          if xteam == home_team:
+            pass
+          else:
+            road_team = xteam
+
+        team_ip = pitbox.groupby('Team',as_index=False)['IP'].sum()
+        curr_inning = np.min(team_ip['IP'])+1
+        curr_inning = int(curr_inning)
+
+        if curr_inning >= 9:
+          inningprint = 'F'
+        else:
+           inningprint = str(curr_inning)
+
+        team_runs = hitbox.groupby('Team',as_index=False)['R'].sum()
+        team_runs['Opp'] = team_runs['Team'].map(this_mu)
+        team_runs['Home'] = team_runs['Team'].map(this_hometeams)
+        team_runs = team_runs.sort_values(by='R',ascending=False)
+        team_runs_dict = dict(zip(team_runs.Team,team_runs.R))
+
+        show_df = pd.DataFrame({'Inning': inningprint, 'Road': road_team, 'Home': home_team, 
+                                'Road Score': team_runs_dict.get(road_team),
+                                'Home Score': team_runs_dict.get(home_team)}, index=[0])
+
+        game_dis = show_df['Road'].iloc[0] + ' @ ' + show_df['Home'].iloc[0]
+        score = road_team + ' (' + str(team_runs_dict.get(road_team)) + ') @ ' + home_team + ' (' + str(team_runs_dict.get(home_team)) + ')'
+
+        this_score = pd.DataFrame({'Game': game_dis, 'Score': score, 'Inn': inningprint}, index=[0])
+        scoreboard_df = pd.concat([scoreboard_df,this_score])
+        scoreboard_df = scoreboard_df.drop_duplicates(subset=['Game'],keep='last')
+       
+        box_steals = hitbox[['Player','Team','SB']]
+        todays_steals = pd.concat([todays_steals,box_steals])
+        todays_steals = todays_steals[todays_steals['SB']>0]
+
+        box_homers = hitbox[['Player','Team','HR']]
+        todays_homers = pd.concat([todays_homers,box_homers])
+        todays_homers = todays_homers[todays_homers['HR']>0]
+
+        box_dkpts = hitbox[['Player','Team','DKPts']]
+        todays_dkpts = pd.concat([todays_dkpts,box_dkpts])
+
+        # LIVE STUFF
         gamedb = get_MILB_PBP_Live(game)
 
         if len(gamedb) == 0:
@@ -507,7 +700,6 @@ while True:
 
         finishedgames = livedb[livedb['game_status']=='F']
         finished_game_pitchers = list(finishedgames['player_name'].unique())
-        #pitchergamestatus = dict(zip(livedb.player_name,livedb.game_status))
 
         lastpitcher = livedb.sort_values(by=['inning','at_bat_number','pitch_number'])[['PitcherTeam_aff','player_name','inning','at_bat_number','pitch_number']]
         cutlist=lastpitcher[['PitcherTeam_aff','player_name']].drop_duplicates()
@@ -587,6 +779,28 @@ while True:
 
 
     try:
+       scoreboard_placeholder.dataframe(scoreboard_df,width=300, height=400, hide_index=True)
+    except:
+       pass
+    
+    todays_steals = todays_steals.sort_values(by=['SB','Team'], ascending=[False,True])
+    try:
+      sb_placeholder.dataframe(todays_steals,width=550, height=300, hide_index=True)
+    except:
+      pass
+    
+    todays_homers = todays_homers.sort_values(by=['HR','Team'], ascending=[False,True])
+    try:
+      hr_placeholder.dataframe(todays_homers,width=550, height=300, hide_index=True)
+    except:
+      pass
+
+    try:
+       dk_placeholder.dataframe(todays_dkpts,width=550, height=300, hide_index=True)
+    except:
+       pass
+
+    try:
        df1_placeholder.dataframe(df,width=800, height=600, hide_index=True)
     except:
        pass
@@ -603,7 +817,10 @@ while True:
       df4_placeholder.dataframe(mixdata,width=1000, height=850, hide_index=True)
     except:
       pass
-    
+
+   
+
+
     # TRY FILTERING
     # Initialize session state for filter persistence
     #if "selected_team" not in st.session_state:
@@ -631,6 +848,7 @@ while True:
 
     print('waiting 30 seconds to refresh')
     time.sleep(30)
+    scoreboard_text = ''
     
     #try:
       #df1_placeholder.dataframe(df, hide_index=True)
