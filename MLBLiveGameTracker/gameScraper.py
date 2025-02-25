@@ -607,6 +607,7 @@ while True:
     todays_steals = pd.DataFrame()
     todays_dkpts = pd.DataFrame()
     todays_homers = pd.DataFrame()
+    all_pitch_lines = pd.DataFrame()
 
     all_matchups = {}
 
@@ -632,6 +633,13 @@ while True:
 
         hitbox['DKPts'] = (hitbox['1B']*3)+(hitbox['2B']*5)+(hitbox['3B']*8)+(hitbox['HR']*10)+(hitbox['SB']*5)+(hitbox['BB']*2)+(hitbox['HBP']*2)+(hitbox['R']*2)+(hitbox['RBI']*2)
         pitbox['DKPts'] = (pitbox['IP']*2.25)+(pitbox['SO']*2)+(pitbox['W']*4)+(pitbox['ER']*-2)+(pitbox['H']*-.6)+(pitbox['BB']*-.6)
+
+        pitbox['Line'] = pitbox['IP'].astype(str) + 'IP ' + pitbox['H'].astype(str) + 'H ' + pitbox['ER'].astype(str) + 'ER ' + pitbox['SO'].astype(str) + 'K ' + pitbox['BB'].astype(str) + 'BB'
+        #pitbox = pitbox[pitbox['GS']==1]
+        linebox = pitbox[['Player','Line']]
+        linebox.columns=['Pitcher','Line']
+
+        all_pitch_lines = pd.concat([all_pitch_lines,linebox])
 
         ## CREATE SCOREBOARD OUT OF HIT BOX 
         teams = hitbox['Team'].unique()
@@ -800,7 +808,12 @@ while True:
        dk_placeholder.dataframe(todays_dkpts,width=550, height=450, hide_index=True)
     except:
        pass
-
+    
+    # merge in lines
+    df = pd.merge(df, all_pitch_lines, how='left', on='Pitcher')
+    df = df[['Pitcher','Team','Line','PC','Whiffs','SwStr%','Strike%','Ball%','Current Pitcher?']]
+    df.columns=['Pitcher','Team','Line','PC','Whiffs','SwStr%','Strike%','Ball%','OnMound?']
+    df.style.format({'A': '{:.1%}'})
     try:
        df1_placeholder.dataframe(df,width=800, height=600, hide_index=True)
     except:
@@ -819,33 +832,7 @@ while True:
     except:
       pass
 
-   
-
-
-    # TRY FILTERING
-    # Initialize session state for filter persistence
-    #if "selected_team" not in st.session_state:
-       #st.session_state.selected_team = "All"
-    
-    # Sidebar for filters
-    #st.sidebar.header("Filters")
-
-    # Team filter
-    #teams = ["All"] + list(df["Team"].unique())
-    #selected_team = st.sidebar.selectbox(
-        #"Select Team",
-        #options=teams,
-        #index=teams.index(st.session_state.selected_team)
-    #)
-    #t.session_state.selected_team = selected_team
-
-    #filtered_df = df.copy()
-    #if selected_team != "All":
-       #filtered_df = filtered_df[filtered_df["Team"] == selected_team]
-      
-    #st.dataframe(filtered_df)
-
-
+  
 
     print('waiting 30 seconds to refresh')
     time.sleep(30)
