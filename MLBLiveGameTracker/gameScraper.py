@@ -538,13 +538,13 @@ with col1:
   st.write('Scoreboard')
   scoreboard_placeholder = st.empty()
 with col2:
-   st.write('Todays Steals:')
+   st.write('Stolen Bases:')
    sb_placeholder = st.empty()
 with col3:
-   st.write('Todays Home Runs:')
+   st.write('Home Runs:')
    hr_placeholder = st.empty()
 with col4:
-   st.write('Todays DK Leaders:')
+   st.write('Fantasy Point Leaders - Hitters:')
    dk_placeholder = st.empty()
 #################
 
@@ -834,6 +834,7 @@ while True:
     except:
        pass
     
+    mixdata = mixdata.sort_values(by=['Pitcher','PC'],ascending=[True,False])
     try:
       df4_placeholder.dataframe(mixdata,width=1000, height=650, hide_index=True)
     except:
