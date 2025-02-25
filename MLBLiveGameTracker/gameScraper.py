@@ -636,8 +636,8 @@ while True:
 
         pitbox['Line'] = pitbox['IP'].astype(str) + 'IP ' + pitbox['H'].astype(str) + 'H ' + pitbox['ER'].astype(str) + 'ER ' + pitbox['SO'].astype(str) + 'K ' + pitbox['BB'].astype(str) + 'BB'
         #pitbox = pitbox[pitbox['GS']==1]
-        linebox = pitbox[['Player','Line']]
-        linebox.columns=['Pitcher','Line']
+        linebox = pitbox[['Player','Line','DKPts']]
+        linebox.columns=['Pitcher','Line','DKPts']
 
         all_pitch_lines = pd.concat([all_pitch_lines,linebox])
 
@@ -811,9 +811,11 @@ while True:
     
     # merge in lines
     df = pd.merge(df, all_pitch_lines, how='left', on='Pitcher')
-    df = df[['Pitcher','Team','Line','PC','Whiffs','SwStr%','Strike%','Ball%','Current Pitcher?']]
-    df.columns=['Pitcher','Team','Line','PC','Whiffs','SwStr%','Strike%','Ball%','OnMound?']
-    df.style.format({'A': '{:.1%}'})
+    df = df[['Pitcher','Team','Line','DKPts','PC','Whiffs','SwStr%','Strike%','Ball%','Current Pitcher?']]
+    df.columns=['Pitcher','Team','Line','DKPts','PC','Whiffs','SwStr%','Strike%','Ball%','OnMound?']
+    df.style.format({'SwStr%': '{:.1%}'})
+    df.style.format({'Strike%': '{:.1%}'})
+    df.style.format({'Ball%': '{:.1%}'})
     try:
        df1_placeholder.dataframe(df,width=800, height=600, hide_index=True)
     except:
