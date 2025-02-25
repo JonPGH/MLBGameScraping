@@ -787,7 +787,7 @@ while True:
 
 
     try:
-       scoreboard_placeholder.dataframe(scoreboard_df,width=300, height=450, hide_index=True)
+       scoreboard_placeholder.dataframe(scoreboard_df,width=350, height=450, hide_index=True)
     except:
        pass
     
@@ -834,11 +834,8 @@ while True:
     except:
       pass
 
-  
-
-    print('waiting 30 seconds to refresh')
-    time.sleep(30)
-    scoreboard_text = ''
+    #print('waiting 30 seconds to refresh')
+    time.sleep(15)
     
     #try:
       #df1_placeholder.dataframe(df, hide_index=True)
