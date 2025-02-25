@@ -550,10 +550,17 @@ with col4:
 
 
 # Create placeholders for the DataFrames
-st.write('Pitcher Data:')
-df1_placeholder = st.empty()
 
-#### MESSING AROUND WITH COLUMNS ####
+# Create two columns
+col1, col2 = st.columns(2)
+with col1:
+  st.write('Pitcher Data:')
+  df1_placeholder = st.empty()
+with col2:
+  st.write('Pitch Mix Data')
+  df4_placeholder = st.empty()
+
+
 # Create two columns
 col1, col2 = st.columns(2)
 
@@ -567,8 +574,6 @@ with col2:
    st.write('Top EVs:')
    df3_placeholder = st.empty()
 
-st.write('Pitch Mix Data')
-df4_placeholder = st.empty()
 
 
 while True:
@@ -817,20 +822,20 @@ while True:
     df.style.format({'Strike%': '{:.1%}'})
     df.style.format({'Ball%': '{:.1%}'})
     try:
-       df1_placeholder.dataframe(df,width=800, height=600, hide_index=True)
+       df1_placeholder.dataframe(df,width=800, height=650, hide_index=True)
     except:
        pass
     try:
-       df2_placeholder.dataframe(hrs,width=800, height=200, hide_index=True)
+       df2_placeholder.dataframe(hrs,width=800, height=500, hide_index=True)
     except:
        pass
     try:
-       df3_placeholder.dataframe(evs,width=800, height=200, hide_index=True)
+       df3_placeholder.dataframe(evs,width=800, height=500, hide_index=True)
     except:
        pass
     
     try:
-      df4_placeholder.dataframe(mixdata,width=1000, height=850, hide_index=True)
+      df4_placeholder.dataframe(mixdata,width=1000, height=650, hide_index=True)
     except:
       pass
 
