@@ -821,6 +821,7 @@ while True:
     df.style.format({'SwStr%': '{:.1%}'})
     df.style.format({'Strike%': '{:.1%}'})
     df.style.format({'Ball%': '{:.1%}'})
+    df = df.sort_values(by='DKPts',ascending=False)
     try:
        df1_placeholder.dataframe(df,width=800, height=650, hide_index=True)
     except:
@@ -835,6 +836,7 @@ while True:
        pass
     
     mixdata = mixdata.sort_values(by=['Pitcher','PC'],ascending=[True,False])
+    mixdata = mixdata[['Pitcher','Team','Pitch','PC','Velo','SwStr%','Strike%','Ball%']]
     try:
       df4_placeholder.dataframe(mixdata,width=1000, height=650, hide_index=True)
     except:
