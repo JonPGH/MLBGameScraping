@@ -640,7 +640,7 @@ while True:
 
         all_pitch_lines = pd.concat([all_pitch_lines,linebox])
 
-        show_hitbox = hitbox[['Player','Team','H','R','HR','RBI','SB','2B','3B','SB','SO','BB','DKPts']]
+        show_hitbox = hitbox[['Player','Team','H','R','HR','RBI','SB','2B','3B','SO','BB','DKPts']]
         allhitboxes = pd.concat([allhitboxes,show_hitbox])
 
         ## CREATE SCOREBOARD OUT OF HIT BOX 
@@ -839,21 +839,7 @@ while True:
     except:
       pass
 
-
-    # Add a Team filter for df1
-    #team_options = allhitboxes["Team"].unique().tolist()  # Get unique teams from df1
-    #selected_team = st.selectbox("Filter Hitting Box Scores By Team", ["All"] + team_options)
-
-    # Apply the filter to df1 based on the selection
-    #if selected_team != "All":
-        #filtered_df1 = allhitboxes[allhitboxes["Team"] == selected_team]
-    #else:
-        #filtered_df1 = allhitboxes  # Show unfiltered df1 if "All" is selected
-
-    try:
-       hitbox_placeholder.dataframe(allhitboxes,width=1000,height=500, hide_index=True)
-    except:
-       pass
+    hitbox_placeholder.dataframe(allhitboxes,width=1000,height=500, hide_index=True)
     #print('waiting 30 seconds to refresh')
     time.sleep(15)
     
