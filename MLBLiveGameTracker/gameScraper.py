@@ -548,12 +548,9 @@ with col4:
    dk_placeholder = st.empty()
 #################
 
-
 # Create placeholders for the DataFrames
-
 df1_placeholder = st.empty()
 df4_placeholder = st.empty()
-
 
 # Create two columns
 col1, col2 = st.columns(2)
@@ -568,7 +565,9 @@ with col2:
    st.write('Top EVs:')
    df3_placeholder = st.empty()
 
-
+# Placeholder for hitting boxscores
+st.write('Hitting Box Scores:')
+hitbox_placeholder = st.empty()
 
 while True:
     scoreboard_df = pd.DataFrame()
@@ -607,6 +606,7 @@ while True:
     todays_dkpts = pd.DataFrame()
     todays_homers = pd.DataFrame()
     all_pitch_lines = pd.DataFrame()
+    allhitboxes = pd.DataFrame()
 
     all_matchups = {}
 
@@ -639,6 +639,9 @@ while True:
         linebox.columns=['Pitcher','Line','DKPts']
 
         all_pitch_lines = pd.concat([all_pitch_lines,linebox])
+
+        show_hitbox = hitbox[['Player','Team','H','1B','2B','3B','HR','SB','SO','BB','DKPts']]
+        allhitboxes = pd.concat([allhitboxes,show_hitbox])
 
         ## CREATE SCOREBOARD OUT OF HIT BOX 
         teams = hitbox['Team'].unique()
@@ -836,6 +839,21 @@ while True:
     except:
       pass
 
+
+    # Add a Team filter for df1
+    #team_options = allhitboxes["Team"].unique().tolist()  # Get unique teams from df1
+    #selected_team = st.selectbox("Filter Hitting Box Scores By Team", ["All"] + team_options)
+
+    # Apply the filter to df1 based on the selection
+    #if selected_team != "All":
+        #filtered_df1 = allhitboxes[allhitboxes["Team"] == selected_team]
+    #else:
+        #filtered_df1 = allhitboxes  # Show unfiltered df1 if "All" is selected
+
+    try:
+       hitbox_placeholder.dataframe(allhitboxes,width=1000,height=500, hide_index=True)
+    except:
+       pass
     #print('waiting 30 seconds to refresh')
     time.sleep(15)
     
