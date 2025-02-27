@@ -551,14 +551,8 @@ with col4:
 
 # Create placeholders for the DataFrames
 
-# Create two columns
-col1, col2 = st.columns(2)
-with col1:
-  st.write('Pitcher Data:')
-  df1_placeholder = st.empty()
-with col2:
-  st.write('Pitch Mix Data')
-  df4_placeholder = st.empty()
+df1_placeholder = st.empty()
+df4_placeholder = st.empty()
 
 
 # Create two columns
