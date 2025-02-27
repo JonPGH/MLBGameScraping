@@ -640,7 +640,7 @@ while True:
 
         all_pitch_lines = pd.concat([all_pitch_lines,linebox])
 
-        show_hitbox = hitbox[['Player','Team','H','1B','2B','3B','HR','SB','SO','BB','DKPts']]
+        show_hitbox = hitbox[['Player','Team','H','R','HR','RBI','SB','2B','3B','SB','SO','BB','DKPts']]
         allhitboxes = pd.concat([allhitboxes,show_hitbox])
 
         ## CREATE SCOREBOARD OUT OF HIT BOX 
